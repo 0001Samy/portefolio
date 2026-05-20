@@ -143,9 +143,12 @@ const socialLinks = [
   }
 ];
 
+type FormStatus = "idle" | "loading" | "success" | "error";
+
 export default function Page() {
   const navRef = useRef<HTMLElement>(null);
   const [typedText, setTypedText] = useState("");
+  const [formStatus, setFormStatus] = useState<FormStatus>("idle");
 
   useEffect(() => {
     let index = 0;
@@ -438,14 +441,32 @@ export default function Page() {
 
             <form
               className="js-reveal glass-panel space-y-5 p-7 lg:col-span-2"
-              onSubmit={(event) => {
+              onSubmit={async (event) => {
                 event.preventDefault();
-                window.alert("Message envoyé !");
+                setFormStatus("loading");
+                const form = event.currentTarget;
+                const data = new FormData(form);
+                const res = await fetch("/api/contact", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    name: data.get("name"),
+                    email: data.get("email"),
+                    message: data.get("message"),
+                  }),
+                });
+                if (res.ok) {
+                  setFormStatus("success");
+                  form.reset();
+                } else {
+                  setFormStatus("error");
+                }
               }}
             >
               <label className="block text-sm text-slate-300">
                 Nom
                 <input
+                  name="name"
                   type="text"
                   required
                   placeholder="Ton nom"
@@ -456,6 +477,7 @@ export default function Page() {
               <label className="block text-sm text-slate-300">
                 Email
                 <input
+                  name="email"
                   type="email"
                   required
                   placeholder="Ton email"
@@ -466,6 +488,7 @@ export default function Page() {
               <label className="block text-sm text-slate-300">
                 Message
                 <textarea
+                  name="message"
                   required
                   rows={4}
                   placeholder="Salut Samy, j'aimerais te parler de..."
@@ -473,11 +496,23 @@ export default function Page() {
                 />
               </label>
 
+              {formStatus === "success" && (
+                <p className="text-sm font-medium text-cyan-300">
+                  Message envoyé ! Je te répondrai dès que possible.
+                </p>
+              )}
+              {formStatus === "error" && (
+                <p className="text-sm font-medium text-red-400">
+                  Erreur lors de l&apos;envoi. Réessaie ou contacte-moi directement.
+                </p>
+              )}
+
               <button
                 type="submit"
-                className="w-full rounded-full bg-gradient-to-r from-cyan-300 to-blue-400 px-7 py-3 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(56,189,248,0.35)]"
+                disabled={formStatus === "loading"}
+                className="w-full rounded-full bg-gradient-to-r from-cyan-300 to-blue-400 px-7 py-3 font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(56,189,248,0.35)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
-                Envoyer
+                {formStatus === "loading" ? "Envoi..." : "Envoyer"}
               </button>
             </form>
           </div>
