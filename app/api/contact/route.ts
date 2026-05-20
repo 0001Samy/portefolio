@@ -34,7 +34,8 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: "Erreur d'envoi" }, { status: 500 });
+    console.error("Resend error:", error);
+    return NextResponse.json({ error: "Erreur d'envoi", detail: error.message }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
