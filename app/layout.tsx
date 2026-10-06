@@ -1,34 +1,29 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter"
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit"
-});
+// Polices auto-hébergées par Next.js : aucune requête vers Google côté visiteur.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono-jb" });
 
 export const metadata: Metadata = {
-  title: "BADOUD Samy — Infrastructure & Cybersécurité",
+  title: "Samy Badoud — Technicien systèmes & réseaux",
   description:
-    "Portfolio de BADOUD Samy, étudiant IPSSI spécialisé en infrastructure et cybersécurité. En recherche d'alternance en Île-de-France."
+    "Portfolio de Samy Badoud, étudiant en Bachelor à l'IPSSI Paris. Réseaux Cisco, virtualisation, sécurité. Recherche d'alternance en Île-de-France.",
+  openGraph: {
+    title: "Samy Badoud — Technicien systèmes & réseaux",
+    description: "Réseaux, virtualisation, sécurité. Recherche d'alternance.",
+    locale: "fr_FR",
+    type: "website"
+  }
 };
 
-type RootLayoutProps = Readonly<{
-  children: React.ReactNode;
-}>;
-
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({
+  children
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${outfit.variable}`}>
-      <body className="min-h-screen bg-[#0b0f19] text-slate-50 antialiased">
-        {children}
-      </body>
+    <html lang="fr" className={`${inter.variable} ${mono.variable}`}>
+      <body className="min-h-screen font-sans antialiased">{children}</body>
     </html>
   );
 }
-
